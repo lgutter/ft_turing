@@ -17,4 +17,5 @@ Transitions:""")
     for key in config['transitions'].items():
         for item in key[1]:
             print(
-                f"({key[0]}, {item['read']}) -> ({item['to_state']}, {item['write']}, {item['action']})")
+                f"({key[0]}, '{item['read']}') -> ({item['to_state']}, '{item['write']}', {item['action']})")
+    print("******************************************")
