@@ -33,16 +33,6 @@ def checkInput(config, input_):
             raise ValueError(
                 f"'{key}' in 'alphabet' should be a single character!")
 
-# check the input now, after we've verified the alphabet and blank.
-    for c in input_:
-        if c not in config['alphabet']:
-            raise ValueError(f"'{c}' in 'input' should be in 'alphabet'")
-
-    if config['blank'] in input_:
-        raise ValueError(
-            f"'blank' ('{config['blank']}') should not be in input!")
-
-# continue checking the other fields in the json
     if config['initial'] not in config['states']:
         raise ValueError("'initial' should be in 'states'!")
 
@@ -65,9 +55,9 @@ def checkInput(config, input_):
                 f"'{key[0]}' in 'transitions' does not have any content!")
 
         for item in key[1]:
-            if len(item.items()) < 1:
+            if set(item.keys()) != set(expected.keys()):
                 raise ValueError(
-                    f"'{key[0]}' in 'transitions' has empty block!")
+                    f"'{key[0]}' in 'transitions' has incomplete block!")
 
             if type(item) != dict:
                 raise ValueError(
@@ -81,3 +71,12 @@ def checkInput(config, input_):
                 if instr[1] not in expected[instr[0]]:
                     raise ValueError(
                         f"'{instr[1]}' should be one of: {expected[instr[0]]}")
+
+# check the input now, after we've verified the json.
+    for c in input_:
+        if c not in config['alphabet']:
+            raise ValueError(f"'{c}' in 'input' should be in 'alphabet'")
+
+    if config['blank'] in input_:
+        raise ValueError(
+            f"'blank' ('{config['blank']}') should not be in input!")
