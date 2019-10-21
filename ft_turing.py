@@ -1,41 +1,37 @@
 import json
 import sys
+import argparse
 from checkInput import checkInput
 
 
-def turingMachine(config):
+def turingMachine(config, input):
     (name, alphabet, blank, states,
         initial, finals, transitions) = config.values()
     print(name)
 
 
 def main():
-    usage = """usage: ft_turing [-h] jsonfile input
+    parser = argparse.ArgumentParser()
+    parser.add_argument('jsonfile', type=str,
+                        help='json description of the machine')
+    parser.add_argument('input', type=str,
+                        help='input of the machine')
 
-positional arguments:
-    jsonfile              json description of the machine
+    args = parser.parse_args()
+    try:
+        with open(args.jsonfile, 'r') as conf_file:
+            config = json.load(conf_file)
+    except ValueError as error:
+        print("Error while loading json file: {0}".format(error))
+        sys.exit(1)
 
-    input                 input of the machine
-
-optional arguments:
-    -h, --help            show this help message and exit"""
-    if len(sys.argv) != 3:
-        print(usage)
+    try:
+        checkInput(config, args.input)
+    except ValueError as error:
+        print("Error in checkInput: {0}".format(error))
+        exit
     else:
-        for arg in sys.argv:
-            if arg == "-h" or arg == "--help":
-                print(usage)
-                break
-        else:
-            with open(sys.argv[1], 'r') as conf_file:
-                config = json.load(conf_file)
-            try:
-                checkInput(config)
-            except ValueError as error:
-                print("Error in checkInput: {0}".format(error))
-                exit
-            else:
-                turingMachine(config)
+        turingMachine(config, args.input)
 
 
 if __name__ == "__main__":
