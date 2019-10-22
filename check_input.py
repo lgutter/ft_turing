@@ -1,6 +1,6 @@
-def checkInput(config, input_):
+def check_input(config, input_):
     '''
-    checkInput verifies if the the input is valid,
+    check_input verifies if the the input is valid,
     and if the contents of the json file are what we expect.
     It verifies if every entry is of the right type, and where possible,
     it verifies that the content of fields are what we expect them to be.

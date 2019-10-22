@@ -1,6 +1,9 @@
-def printMachine(config):
+from transition_string import transition_string
+
+
+def print_machine(config):
     '''
-    printMachine simply prints the machine definition from the json in a
+    print_machine simply prints the machine definition from the json in a
     human readable format. For the transitions I use a for loop to print
     every transition on a seperate line with the needed information.
     '''
@@ -16,6 +19,5 @@ Finals: {config['finals']}
 Transitions:""")
     for key in config['transitions'].items():
         for item in key[1]:
-            print(
-                f"({key[0]}, '{item['read']}') -> ({item['to_state']}, '{item['write']}', {item['action']})")
+            print(transition_string(key[0], item))
     print("******************************************")
