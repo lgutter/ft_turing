@@ -1,33 +1,30 @@
 import json
 import sys
 import argparse
-from checkInput import checkInput
-from printMachine import printMachine
-from printStatus import printStatus
+from check_input import check_input
+from print_machine import print_machine
+from print_status import print_status
+from transition import transition
 
 
 class MachineError(Exception):
     pass
 
-
-def turingMachine(config, input_):
+def turing_machine(config, input_):
     state = config['initial']
     tape = list(input_)
-    transitions = config['transitions']
     i = 0
     while state not in config['finals']:
-        for item in transitions[state]:
+        for item in config['transitions'][state]:
             if item['read'] == tape[i]:
-                printStatus(tape, i)
-                tape[i] = item['write']
-                state = item['to_state']
-                i = i - 1 if item['action'] == 'LEFT' else i + 1
+                (i, state) = transition(i, tape, item, config['blank'])
+                print_status(tape.copy(), i, state, item)
                 break
         else:
+            print_status(tape.copy(), i, state, item)
             raise MachineError(
-                f"No valid transition found for state '{state}' and character '{item['read']}'")
-    printStatus(tape, i)
-
+                f"No valid transition found for state '{state}' and character '{tape[i]}'")
+    print("".join(tape))
 
 def main():
     parser = argparse.ArgumentParser()
@@ -37,23 +34,25 @@ def main():
                         help='input of the machine')
 
     args = parser.parse_args()
+    # load the json file and print a relevant error if something goes wrong.
     try:
         with open(args.jsonfile, 'r') as conf_file:
             config = json.load(conf_file)
     except ValueError as error:
         print(f"Error while loading json file: {error}")
-        return
+        sys.exit(-1)
 
+    # run check_input
     try:
-        checkInput(config, args.input)
+        check_input(config, args.input)
     except ValueError as error:
-        print(f"Error in checkInput: {error}")
-        return
-    printMachine(config)
+        print(f"Error in check_input: {error}")
+        sys.exit(-1)
+    print_machine(config)
     try:
-        turingMachine(config, args.input)
+        turing_machine(config, args.input)
     except MachineError as error:
-        print(f"Error in turingMachine: {error}")
+        print(f"Error in turing_machine: {error}")
 
 
 if __name__ == "__main__":
