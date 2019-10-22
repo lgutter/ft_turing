@@ -10,7 +10,15 @@ from transition import transition
 class MachineError(Exception):
     pass
 
+
 def turing_machine(config, input_):
+    '''
+    The actual turing machine parser. We create a loop that keeps running until
+    a final state has been reached. using a for/in we find the right transition
+    and let the transition function handle the transition, and print the status
+    everytime we go through a transition.
+    '''
+
     state = config['initial']
     tape = list(input_)
     i = 0
@@ -26,6 +34,7 @@ def turing_machine(config, input_):
                 f"No valid transition found for state '{state}' and character '{tape[i]}'")
     print("".join(tape))
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('jsonfile', type=str,
@@ -38,16 +47,16 @@ def main():
     try:
         with open(args.jsonfile, 'r') as conf_file:
             config = json.load(conf_file)
-    except ValueError as error:
+    except Exception as error:
         print(f"Error while loading json file: {error}")
-        sys.exit(-1)
+        sys.exit(1)
 
     # run check_input
     try:
         check_input(config, args.input)
     except ValueError as error:
         print(f"Error in check_input: {error}")
-        sys.exit(-1)
+        sys.exit(1)
     print_machine(config)
     try:
         turing_machine(config, args.input)
